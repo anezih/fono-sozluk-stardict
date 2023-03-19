@@ -8,7 +8,7 @@ Betiği çalıştırmak için Powershell 7 gereklidir. Bu klasörde uçbirimi ba
 
 `Fono-Stardict.ps1 [-Dil] <string> [-GLS] [-Textual] [-TSV] [-Hunspell] [<CommonParameters>]`
 
-`-Dil` için kabul edilen 5 parametreden (EN, FR, ES, DE, RU ) birini girin. Örneğin: `-Dil EN`. Şu anda sadece `EN` ve `FR` dönüşümü yapılabiliyor. Diğer dillerin veri dosyaları elinizde varsa bu dillerin desteklenmesi için yardım edebilirsiniz.
+`-Dil` için kabul edilen 6 parametreden (EN, FR, ES, DE, RU, IT) birini girin. Örneğin: `-Dil EN`. Şu anda sadece `EN` (İngilizce) ve `FR` (Fransızca) dönüşümü yapılabiliyor. Diğer dillerin veri dosyaları elinizde varsa bu dillerin desteklenmesi için yardım edebilirsiniz.
 
 `-TSV`, `-GLS`, `-Textual` dönüşüm formatlarından en az birini ekleyin. Birden fazla seceçenek geçebilirsiniz.
 
