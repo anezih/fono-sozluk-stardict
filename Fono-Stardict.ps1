@@ -202,9 +202,9 @@ switch ($Dil) {
         $dosyaismi = "fono_en_tr"
 
         $trden_ = ENTR $TR_ING
-        Write-Host "*** TR_ING.xml için tüm tüm madde başlıkları/tanım gövdeleri bulundu."
+        Write-Host "*** TR_ING.xml için tüm madde başlıkları/tanım gövdeleri bulundu."
         $trye_  = ENTR $ING_TR
-        Write-Host "*** ING_TR.xml için tüm tüm madde başlıkları/tanım gövdeleri bulundu."
+        Write-Host "*** ING_TR.xml için tüm madde başlıkları/tanım gövdeleri bulundu."
         if ($Hunspell) {
             Add-Type -AssemblyName $PSScriptRoot\Modul\HunspellWordForms.dll
             $sozluk_tr = [WordForms]::new("$PSScriptRoot\Hunspell\tr_TR.dic")
