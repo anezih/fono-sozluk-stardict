@@ -12,4 +12,4 @@ Sözlükler için kaynak:
 https://github.com/titoBouzout/Dictionaries
 
 # Not
-Sözcüklerin çekimlenmiş hallerinin üretilmesinde (özellikle Türkçe için) Hunspell kullanmak tam da beklenen sonuçları vermiyor. Arama yaptığınızda çok ilgisiz sonuçlar dönebilir. Ayrıca, `-Hunspell` seçeneğini seçtiğinizde programın çalışma süresi bir hayli uzayacak.
+Sözcüklerin çekimlenmiş hallerinin üretilmesinde (özellikle Türkçe için) Hunspell kullanmak tam da beklenen sonuçları veremeyebilir.
