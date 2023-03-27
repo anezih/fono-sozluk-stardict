@@ -13,4 +13,4 @@ https://github.com/titoBouzout/Dictionaries
 
 # Not
 - Sözcüklerin çekimlenmiş hallerinin üretilmesinde (özellikle Türkçe için) Hunspell kullanmak tam da beklenen sonuçları veremeyebilir.
-- WordForms sınıfını içeren HunspellWordForms.dll kütüphanesinin [kaynak kodu](https://gist.github.com/anezih/5e0fc6d68c9166fe2ea3ffc05bc68476)
+- WordForms sınıfını içeren HunspellWordForms.dll kütüphanesinin [kaynak kodu](https://github.com/anezih/HunspellWordForms)
