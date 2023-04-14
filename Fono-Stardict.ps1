@@ -1,7 +1,7 @@
 #Requires -Version 7
 
 [CmdletBinding()]
-param 
+param
 (
     [switch]$GLS,
     [switch]$Textual,
@@ -30,7 +30,8 @@ function ENTR {
                         "<strong[^>]+>", "<strong>" -replace
                         "<span[^>]+>", "<span>" -replace
                         "<em[^>]+>", "<em>" -replace
-                        "<div[^>]+>", "<div>"
+                        "<div[^>]+>", "<div>" -replace
+                        "<sup[^>]+>", "<sup>"
         @{
             BASLIK = $baslik.ReplaceLineEndings("").Trim()
             TANIM  = $tanim_html.ReplaceLineEndings("").Trim()
@@ -70,7 +71,7 @@ function EuroDictXP
         [bool]$add_abbrv
     )
     Add-Type -AssemblyName $PSScriptRoot\Modul\RtfPipe.dll
-    
+
     $offset = 0x4D5
     [System.Byte[]]$byteArray = [System.IO.File]::ReadAllBytes($fileName)
     [System.Byte[]]$byteArray = $byteArray[$offset..$byteArray.Length]
@@ -82,7 +83,7 @@ function EuroDictXP
     $enc16 = [Text.Encoding]::Unicode
 
     $lastIndex = 0
-    while ($true) 
+    while ($true)
     {
         $skip = 0
         $idx = findIndex -array $byteArray -start $lastIndex
@@ -144,18 +145,19 @@ function EuroDictXP
             $compressionStream = [System.IO.Compression.ZLibStream]::new($inputStream, [System.IO.Compression.CompressionMode]::Decompress)
             $compressionStream.CopyTo($outputStream)
             $out = $outputStream.ToArray()
-            
+
             $decoded = $enc8.GetString($out[4..($out.Length-3)])
             if ($decoded.StartsWith("{"))
             {
                 $html    = [RtfPipe.Rtf]::ToHtml([System.String]$decoded)
-                $html = $html -replace 
+                $html = $html -replace
                         "<p[^>]+><br></p>", "" -replace
                         "<div[^>]+>", "<div>" -replace
                         "<p[^>]+>", "<p>" -replace
                         "<strong[^>]+>", "<strong>" -replace
                         "<span[^>]+>", "<span>" -replace
-                        "<em[^>]+>", "<em>"
+                        "<em[^>]+>", "<em>" -replace
+                        "<sup[^>]+>", "<sup>"
                 $chars = foreach ($c in $html.ToCharArray()) {
                     if (-not [char]::IsControl($c))
                     {
@@ -187,6 +189,21 @@ function EuroDictXP
     return $arr
 }
 
+function handleHW
+{
+    param (
+        $obj
+    )
+    if ($obj.BASLIK -match "\d+$")
+    {
+        return $obj.BASLIK.Replace($Matches.0, "")
+    }
+    else
+    {
+        return $obj.BASLIK
+    }
+}
+
 if (-not ($GLS -or $TSV -or $Textual)) {
     Write-Host "[!] En az bir tane çıktı türü belirtmelisiniz."
     exit
@@ -211,9 +228,10 @@ switch ($Dil) {
             $sozluk_en = [WordForms]::new("$PSScriptRoot\Hunspell\en_US.dic")
             $trden = foreach ($i in $trden_)
             {
-                $cekim = ($sozluk_tr.GetWordForms($i.BASLIK, $true, $false, $true)).SFX
+                $baslik_ = (handleHW -obj $i)
+                $cekim = ($sozluk_tr.GetWordForms($baslik_, $true, $false, $true)).SFX
                 @{
-                    BASLIK = $i.BASLIK
+                    BASLIK = $baslik_
                     TANIM  = $i.TANIM
                     CEKIM  = $cekim
                 }
@@ -221,9 +239,10 @@ switch ($Dil) {
             Write-Host "   *** TR_ING.xml için tüm sözcük sonları bulundu."
             $trye = foreach ($i in $trye_)
             {
-                $cekim = ($sozluk_en.GetWordForms($i.BASLIK, $true, $false, $true)).SFX
+                $baslik_ = (handleHW -obj $i)
+                $cekim = ($sozluk_en.GetWordForms($baslik_, $true, $false, $true)).SFX
                 @{
-                    BASLIK = $i.BASLIK
+                    BASLIK = $baslik_
                     TANIM  = $i.TANIM
                     CEKIM  = $cekim
                 }
@@ -245,9 +264,10 @@ switch ($Dil) {
             $sozluk_fr = [WordForms]::new("$PSScriptRoot\Hunspell\fr_FR.dic")
             $trden = foreach ($i in $trden_)
             {
-                $cekim = ($sozluk_tr.GetWordForms($i.BASLIK, $true, $false, $true)).SFX
+                $baslik_ = (handleHW -obj $i)
+                $cekim = ($sozluk_tr.GetWordForms($baslik_, $true, $false, $true)).SFX
                 @{
-                    BASLIK = $i.BASLIK
+                    BASLIK = $baslik_
                     TANIM  = $i.TANIM
                     CEKIM  = $cekim
                 }
@@ -255,9 +275,10 @@ switch ($Dil) {
             Write-Host "   *** TURFRE_P.KDD için tüm sözcük sonları bulundu."
             $trye = foreach ($i in $trye_)
             {
-                $cekim = ($sozluk_fr.GetWordForms($i.BASLIK, $true, $false, $true)).SFX
+                $baslik_ = (handleHW -obj $i)
+                $cekim = ($sozluk_fr.GetWordForms($baslik_, $true, $false, $true)).SFX
                 @{
-                    BASLIK = $i.BASLIK
+                    BASLIK = $baslik_
                     TANIM  = $i.TANIM
                     CEKIM  = $cekim
                 }
@@ -266,8 +287,44 @@ switch ($Dil) {
         }
     }
 
-    { @("ES","DE","RU","IT") -contains $_ }
-    { 
+    "IT"
+    {
+        $isim      = "Fono İtalyanca⇄Türkçe"
+        $dosyaismi = "fono_it_tr"
+
+        $trden_ = EuroDictXP -fileName $PSScriptRoot\SozlukDosyalari\TURITA_P.KDD -add_abbrv $true
+        $trye_  = EuroDictXP -fileName $PSScriptRoot\SozlukDosyalari\ITATUR_P.KDD -add_abbrv $false
+        if ($Hunspell) {
+            Add-Type -AssemblyName $PSScriptRoot\Modul\HunspellWordForms.dll
+            $sozluk_tr = [WordForms]::new("$PSScriptRoot\Hunspell\tr_TR.dic")
+            $sozluk_it = [WordForms]::new("$PSScriptRoot\Hunspell\it_IT.dic")
+            $trden = foreach ($i in $trden_)
+            {
+                $baslik_ = (handleHW -obj $i)
+                $cekim = ($sozluk_tr.GetWordForms($baslik_, $true, $false, $true)).SFX
+                @{
+                    BASLIK = $baslik_
+                    TANIM  = $i.TANIM
+                    CEKIM  = $cekim
+                }
+            }
+            Write-Host "   *** TURITA_P.KDD için tüm sözcük sonları bulundu."
+            $trye = foreach ($i in $trye_)
+            {
+                $baslik_ = (handleHW -obj $i)
+                $cekim = ($sozluk_it.GetWordForms($baslik_, $true, $false, $true)).SFX
+                @{
+                    BASLIK = $baslik_
+                    TANIM  = $i.TANIM
+                    CEKIM  = $cekim
+                }
+            }
+            Write-Host "   *** ITATUR_P.KDD için tüm sözcük sonları bulundu."
+        }
+    }
+
+    { @("ES","DE","RU") -contains $_ }
+    {
         Write-Host "*** Bu dil test edilemediği için işlenemiyor.`n*** Issues kısmından iletişime geçerek dili eklemek için yardım edebilirsiniz."
         exit
     }
@@ -307,7 +364,7 @@ if ($GLS)
         {
             "$($i.BASLIK)`n$($i.TANIM)`n`n"
         }
-    }   
+    }
     # $o = $ustbilgi + $eklenmis -> nedense her maddeden önce bir boşluk ekliyor
     $gls_fname = "$($dosyaismi).gls"
     $o | Out-File -FilePath $gls_fname -Encoding UTF8 -NoNewline -Append
@@ -316,9 +373,9 @@ if ($GLS)
 if ($Textual) {
     [xml]$sdxml = New-Object System.Xml.XmlDocument
 
-    [System.Xml.XmlNode]$header = $sdxml.CreateXmlDeclaration("1.0", "UTF-8", $null)   
+    [System.Xml.XmlNode]$header = $sdxml.CreateXmlDeclaration("1.0", "UTF-8", $null)
     # [System.Xml.XmlAttribute]$namespace = $sdxml.CreateAttribute("xmlns", "xi", "http://www.w3.org/2003/XInclude")
-    
+
     $root = $sdxml.CreateElement("stardict")
     # $root.Attributes.Append($namespace)
 
@@ -356,7 +413,7 @@ if ($Textual) {
     }
     # [void]$root.AppendChild($contents)
     [void]$sdxml.AppendChild($root)
-    [void]$sdxml.InsertBefore($header, $root) 
+    [void]$sdxml.InsertBefore($header, $root)
     $nobom = New-Object System.Text.UTF8Encoding $false
     $xml_fname = "$($dosyaismi)_stardict_textual.xml"
     [System.IO.TextWriter]$writer = New-Object System.IO.StreamWriter($xml_fname, $false, $nobom)
@@ -365,7 +422,7 @@ if ($Textual) {
     Write-Host "*** $($xml_fname) yazıldı." -BackgroundColor Green -ForegroundColor Black
 }
 
-if ($TSV) 
+if ($TSV)
 {
     $o = foreach ($i in $eklenmis) {
         "$($i.BASLIK)`t$($i.TANIM)"

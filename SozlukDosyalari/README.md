@@ -11,3 +11,9 @@ Fransızca için:
 FRETUR_P.KDD
 TURFRE_P.KDD
 ```
+
+İtalyanca için:
+```
+ITATUR_P.KDD
+TURITA_P.KDD
+```
