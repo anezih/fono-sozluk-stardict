@@ -219,6 +219,14 @@ switch ($Dil) {
         $dosyaismi = "fono_en_tr"
 
         $trden_ = ENTR $TR_ING
+        if (Test-Path -Path $PSScriptRoot\SozlukDosyalari\Kisaltmalar.rtf) {
+            $kisaltma_rtf = Get-Content -Path $PSScriptRoot\SozlukDosyalari\Kisaltmalar.rtf -Raw
+            $kisaltma_html = [RtfPipe.Rtf]::ToHtml([System.String]$kisaltma_rtf)
+            $trden_ += @{
+                            BASLIK = "KISALTMALAR"
+                            TANIM  = $kisaltma_html
+                        }
+        }
         Write-Host "*** TR_ING.xml için tüm madde başlıkları/tanım gövdeleri bulundu."
         $trye_  = ENTR $ING_TR
         Write-Host "*** ING_TR.xml için tüm madde başlıkları/tanım gövdeleri bulundu."

@@ -4,6 +4,7 @@ Bu klasöre sözlüklerin kurulum klasörlerindeki veri dosyalarını koyun.
 ```
 ING_TR.xml
 TR_ING.xml
+Kisaltmalar.rtf (İsteğe bağlı)
 ```
 
 Fransızca için:
