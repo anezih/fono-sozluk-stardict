@@ -1,3 +1,7 @@
+# ESKİ
+
+Bu Powershell betiği yerine [https://github.com/anezih/FonoSozlukNet](https://github.com/anezih/FonoSozlukNet) reposunda yer alan uygulamayı kullanabilirsiniz.
+
 # Nedir?
 Fono Yayınları tarafından çıkartılan sözlüklerin CD verilerini TSV, Babylon GLS ve Stardict Textual formatlarına çeviren bir Powershell betiği. Bu üç çıktı tipi StarDict Editor aracılığıyla StarDict formatına dönüştürülebilir. Ayrıca, Textual format PyGlossary aracılığıyla programın desteklediği herhangi bir çıktı formatına dönüştürülebilir. Örneğin Kobo `dicthtml.zip` veya Kindle MOBI formatı.
 
